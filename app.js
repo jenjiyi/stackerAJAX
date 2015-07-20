@@ -6,6 +6,13 @@ $(document).ready( function() {
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
 	});
+
+	$('.inspiration-getter').submit( function(event){
+		//clear out results if previous search ran
+		//get the value of the tag that user submitted into field
+		var answerers = $(this).find("input[name='answerers']").val();
+		getInspired(answerers);
+	});
 });
 
 // this function takes the question object returned by StackOverflow 
@@ -89,4 +96,12 @@ var getUnanswered = function(tags) {
 };
 
 
+var getInspired = function(answerers){
+	console.log("ran get inspired ")
+	//parameters for stackoverflow api request
+	//$.ajax{}
+	
+	//.done
 
+	//.fail
+}
