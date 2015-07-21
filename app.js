@@ -9,9 +9,10 @@ $(document).ready( function() {
 
 	$('.inspiration-getter').submit( function(event){
 		//clear out results if previous search ran
-		//get the value of the tag that user submitted into field
-		var answerers = $(this).find("input[name='answerers']").val();
-		getInspired(answerers);
+		$('.results').html('');
+		//get the value of the tag that user submitted into top answerers
+		var aTags = $(this).find("input[name='answerers']").val();
+		getInspired(aTags);
 	});
 });
 
@@ -95,13 +96,59 @@ var getUnanswered = function(tags) {
 	});
 };
 
+// this function takes the topanswerers object returned by StackOverflow 
+// and creates new result to be appended to DOM
+var showAnswerer = function(topanswerers) {
+	
+	// clone our result template code
+	var result = $('.templates .topanswerers').clone();
+	
+	// Set the answerers properties in result
+	var answererElem = result.find('.answerers-name a');
+	answererElem.attr('href', topanswerers.user.link);
+	answererElem.text(topanswerers.user.display_name);
+	answererElem.append("<br><img src='"+topanswerers.user.profile_image+"' alt='"+topanswerers.user.display_name+"' profile image'>");
 
-var getInspired = function(answerers){
+	// set some properties related to reputation
+	var profile = result.find('.profile');
+	profile.html('<p>Profile URL: <a target="_blank" href=http://stackoverflow.com/users/' + topanswerers.user.user_id + ' >http://stackoverflow.com/users/' + topanswerers.user.user_id  + 
+												'</a>' +
+							'</p>' +
+ 							'<p>Reputation: ' + topanswerers.user.reputation + '</p>' +
+ 							'<p>Accept Rate: ' + topanswerers.user.accept_rate + '</p>'
+	);
+
+	return result;
+};
+var getInspired = function(aTags){
 	console.log("ran get inspired ")
 	//parameters for stackoverflow api request
+		var request = {tag: aTags,
+								site: 'stackoverflow',
+								period: 'all_time'};
 	//$.ajax{}
 	
+	var result = $.ajax({
+		url: "http://api.stackexchange.com/2.2/tags/" + request.tag + "/top-answerers/" + request.period,
+		data: request,
+		dataType: "jsonp",
+		type: "GET",
+		})
+
 	//.done
+		.done(function(result){
+		var searchResults = showSearchResults(request.tag, result.items.length);	
+		$('.search-results').html(searchResults);
+
+		$.each(result.items, function(i, item) {
+			var topanswerers = showAnswerer(item);
+			$('.results').append(topanswerers);
+		});  
+	})
 
 	//.fail
+	.fail(function(jqXHR, error, errorThrown){
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
 }
