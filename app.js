@@ -49,7 +49,30 @@ var showQuestion = function(question) {
 	return result;
 };
 
+// this function takes the topanswerers object returned by StackOverflow 
+// and creates new result to be appended to DOM
+var showAnswerer = function(topanswerers) {
+	
+	// clone our result template code
+	var result = $('.templates .topanswerers').clone();
+	
+	// Set the answerers properties in result
+	var answererElem = result.find('.answerers-name a');
+	answererElem.attr('href', topanswerers.user.link);
+	answererElem.text(topanswerers.user.display_name);
+	answererElem.append("<br><img src='"+topanswerers.user.profile_image+"' alt='"+topanswerers.user.display_name+"' profile image'>");
 
+	// set some properties related to reputation
+	var profile = result.find('.profile');
+	profile.html('<p>Profile URL: <a target="_blank" href=http://stackoverflow.com/users/' + topanswerers.user.user_id + ' >http://stackoverflow.com/users/' + topanswerers.user.user_id  + 
+												'</a>' +
+							'</p>' +
+ 							'<p>Reputation: ' + topanswerers.user.reputation + '</p>' +
+ 							'<p>Accept Rate: ' + topanswerers.user.accept_rate + '</p>'
+	);
+
+	return result;
+};
 // this function takes the results object from StackOverflow
 // and creates info about search results to be appended to DOM
 var showSearchResults = function(query, resultNum) {
@@ -96,30 +119,6 @@ var getUnanswered = function(tags) {
 	});
 };
 
-// this function takes the topanswerers object returned by StackOverflow 
-// and creates new result to be appended to DOM
-var showAnswerer = function(topanswerers) {
-	
-	// clone our result template code
-	var result = $('.templates .topanswerers').clone();
-	
-	// Set the answerers properties in result
-	var answererElem = result.find('.answerers-name a');
-	answererElem.attr('href', topanswerers.user.link);
-	answererElem.text(topanswerers.user.display_name);
-	answererElem.append("<br><img src='"+topanswerers.user.profile_image+"' alt='"+topanswerers.user.display_name+"' profile image'>");
-
-	// set some properties related to reputation
-	var profile = result.find('.profile');
-	profile.html('<p>Profile URL: <a target="_blank" href=http://stackoverflow.com/users/' + topanswerers.user.user_id + ' >http://stackoverflow.com/users/' + topanswerers.user.user_id  + 
-												'</a>' +
-							'</p>' +
- 							'<p>Reputation: ' + topanswerers.user.reputation + '</p>' +
- 							'<p>Accept Rate: ' + topanswerers.user.accept_rate + '</p>'
-	);
-
-	return result;
-};
 var getInspired = function(aTags){
 	console.log("ran get inspired ")
 	//parameters for stackoverflow api request
